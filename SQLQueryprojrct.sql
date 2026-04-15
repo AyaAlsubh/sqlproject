@@ -1,13 +1,9 @@
--- ============================================================
--- Project: Library Database Management System
 
--- ============================================================
+-- Project 04 : Library Database Management System
 
 
-
--- ============================================================
 -- STEP 1 : CREATE DATABASE
--- ============================================================
+
 
 CREATE DATABASE LibraryDB;
 GO
@@ -16,201 +12,112 @@ USE LibraryDB;
 GO
 
 
-
--- ============================================================
--- STEP 2 : CREATE TABLES
--- ============================================================
+-- CREATE TABLES
 
 
-
--- ============================================================
--- TABLE 1 : Categories
--- Books classifications
--- ============================================================
-
-CREATE TABLE Categories(
-
+    
+-- Table 1 : Categories
+--
+CREATE TABLE Categories (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
-    Name VARCHAR(50) NOT NULL,
-
-    Description VARCHAR(200)
-
+    Name VARCHAR(100) NOT NULL,
+    Description VARCHAR(255)
 );
 
 
+-- Table 2 : Books
 
--- ============================================================
--- TABLE 2 : Books
--- Connected with Categories
--- ============================================================
-
-CREATE TABLE Books(
-
+CREATE TABLE Books (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
-    Title VARCHAR(100) NOT NULL,
-
+    Title VARCHAR(150) NOT NULL,
     Author VARCHAR(100) NOT NULL,
-
     Genre VARCHAR(50),
-
     PublicationYear INT,
-
     AvailabilityStatus VARCHAR(20),
-
     CategoryID INT,
 
     FOREIGN KEY (CategoryID)
     REFERENCES Categories(ID)
-
 );
 
 
+-- Table 3 : Members
 
--- ============================================================
--- TABLE 3 : Members
--- ============================================================
-
-CREATE TABLE Members(
-
+CREATE TABLE Members (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
     Name VARCHAR(100) NOT NULL,
-
     ContactInfo VARCHAR(50),
-
-    MembershipType VARCHAR(30)
-    CHECK (MembershipType IN ('Student','Teacher','Visitor')),
-
+    MembershipType VARCHAR(20)
+        CHECK (MembershipType IN ('Student','Teacher','Visitor')),
     RegistrationDate DATE
-
 );
 
 
+-- Table 4 : MemberBook (Borrowing Junction Table)
 
--- ============================================================
--- TABLE 4 : MemberBook
--- Borrowing Table (Many-to-Many)
--- ============================================================
-
-CREATE TABLE MemberBook(
-
+CREATE TABLE MemberBook (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
     MemberID INT NOT NULL,
-
     BookID INT NOT NULL,
-
     BorrowingDate DATE,
-
     DueDate DATE,
+    ReturnDate DATE NULL,
 
-    ReturnDate DATE,
-
-    FOREIGN KEY (MemberID)
-    REFERENCES Members(ID),
-
-    FOREIGN KEY (BookID)
-    REFERENCES Books(ID)
-
+    FOREIGN KEY (MemberID) REFERENCES Members(ID),
+    FOREIGN KEY (BookID) REFERENCES Books(ID)
 );
 
 
+-- Table 5 : LibraryStaff
 
--- ============================================================
--- TABLE 5 : LibraryStaff
--- ============================================================
-
-CREATE TABLE LibraryStaff(
-
+CREATE TABLE LibraryStaff (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
     Name VARCHAR(100),
-
     ContactInfo VARCHAR(50),
-
-    AssignedSection VARCHAR(50),
-
+    AssignedSection VARCHAR(100),
     EmploymentDate DATE
-
 );
 
 
+-- Table 6 : Reservations
 
--- ============================================================
--- TABLE 6 : Reservations
--- ============================================================
-
-CREATE TABLE Reservations(
-
+CREATE TABLE Reservations (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
     MemberID INT,
-
     BookID INT,
-
     ReservationDate DATE,
+    Status VARCHAR(20)
+        CHECK (Status IN ('Pending','Cancelled','Completed')),
 
-    Status VARCHAR(30)
-    CHECK (Status IN ('Pending','Cancelled','Completed')),
-
-    FOREIGN KEY (MemberID)
-    REFERENCES Members(ID),
-
-    FOREIGN KEY (BookID)
-    REFERENCES Books(ID)
-
+    FOREIGN KEY (MemberID) REFERENCES Members(ID),
+    FOREIGN KEY (BookID) REFERENCES Books(ID)
 );
 
-
-
--- ============================================================
--- TABLE 7 : FinancialFines
--- ============================================================
-
-CREATE TABLE FinancialFines(
-
+-- ------------------------------------------------------------
+-- Table 7 : FinancialFines
+-- ------------------------------------------------------------
+CREATE TABLE FinancialFines (
     ID INT PRIMARY KEY IDENTITY(1,1),
-
     MemberID INT,
-
     Amount DECIMAL(10,2),
-
     PaymentStatus VARCHAR(20)
-    CHECK (PaymentStatus IN ('Paid','Unpaid')),
+        CHECK (PaymentStatus IN ('Paid','Unpaid')),
 
-    FOREIGN KEY (MemberID)
-    REFERENCES Members(ID)
-
+    FOREIGN KEY (MemberID) REFERENCES Members(ID)
 );
 
 
+--INSERT DATA 
 
--- ============================================================
--- STEP 3 : INSERT DATA
--- Minimum 5 records each table
--- ============================================================
-
-
-
--- ============================================================
 -- Categories
--- ============================================================
-
 INSERT INTO Categories VALUES
-('Programming','Coding and software books'),
-('Science Fiction','Future and space stories'),
-('Fantasy','Magic and adventure stories'),
+('Programming','Coding books'),
+('Science Fiction','Future stories'),
+('Fantasy','Magic stories'),
 ('Education','Learning resources'),
 ('History','Historical books');
 
-
-
--- ============================================================
 -- Books
--- ============================================================
-
 INSERT INTO Books VALUES
 ('Database Fundamentals','John Smith','Education',2020,'Available',4),
 ('SQL for Beginners','David Lee','Programming',2021,'Borrowed',1),
@@ -218,12 +125,7 @@ INSERT INTO Books VALUES
 ('Harry Potter','J.K Rowling','Fantasy',2005,'Borrowed',3),
 ('Dune','Frank Herbert','Science Fiction',1965,'Available',2);
 
-
-
--- ============================================================
 -- Members
--- ============================================================
-
 INSERT INTO Members VALUES
 ('Aya','0791111111','Student','2025-01-01'),
 ('Lina','0792222222','Teacher','2025-02-10'),
@@ -231,12 +133,7 @@ INSERT INTO Members VALUES
 ('Sara','0794444444','Student','2024-01-09'),
 ('Yousef','0795555555','Teacher','2024-03-01');
 
-
-
--- ============================================================
 -- MemberBook
--- ============================================================
-
 INSERT INTO MemberBook VALUES
 (1,2,'2024-01-02','2024-01-07','2024-01-05'),
 (2,3,'2024-01-04','2024-01-08','2024-01-10'),
@@ -244,12 +141,7 @@ INSERT INTO MemberBook VALUES
 (4,5,'2024-01-06','2024-01-11','2024-01-15'),
 (5,2,'2024-01-08','2024-01-12','2024-01-10');
 
-
-
--- ============================================================
--- Library Staff
--- ============================================================
-
+-- LibraryStaff
 INSERT INTO LibraryStaff VALUES
 ('Mona','0798881111','Science','2020-05-01'),
 ('Ali','0798882222','Programming','2021-06-10'),
@@ -257,12 +149,7 @@ INSERT INTO LibraryStaff VALUES
 ('Yousef','0798884444','History','2019-03-22'),
 ('Huda','0798885555','Reception','2023-01-01');
 
-
-
--- ============================================================
 -- Reservations
--- ============================================================
-
 INSERT INTO Reservations VALUES
 (1,1,'2025-01-02','Pending'),
 (2,2,'2025-01-03','Completed'),
@@ -270,12 +157,7 @@ INSERT INTO Reservations VALUES
 (4,5,'2025-01-05','Pending'),
 (5,4,'2025-01-06','Completed');
 
-
-
--- ============================================================
--- Financial Fines
--- ============================================================
-
+-- FinancialFines
 INSERT INTO FinancialFines VALUES
 (1,5.00,'Paid'),
 (2,2.50,'Unpaid'),
@@ -284,66 +166,47 @@ INSERT INTO FinancialFines VALUES
 (5,1.50,'Paid');
 
 
+-- STEP 4 : REQUIRED TASKS
 
--- ============================================================
--- STEP 4 : REQUIRED TASK
--- Add Email Column
--- ============================================================
 
+-- Add Email column to Members
 ALTER TABLE Members
 ADD Email VARCHAR(100);
 
-
-
--- ============================================================
--- Insert Omar
--- ============================================================
-
+-- Insert new member Omar
 INSERT INTO Members
-(Name,ContactInfo,MembershipType,RegistrationDate,Email)
+(Name, ContactInfo, MembershipType, RegistrationDate, Email)
 VALUES
 ('Omar','9876543210','Student','2024-06-05','Omar@gmail.com');
 
 
-
--- ============================================================
 -- STEP 5 : REQUIRED QUERIES
--- ============================================================
 
 
-
--- 1 Members registered on 01-01-2025
+-- 1. Members registered on 01-01-2025
 SELECT *
 FROM Members
 WHERE RegistrationDate = '2025-01-01';
 
-
-
--- 2 Book titled Database Fundamentals
+-- 2. Book titled Database Fundamentals
 SELECT *
 FROM Books
 WHERE Title = 'Database Fundamentals';
 
-
-
--- 3 Members who made reservations
+-- 3. Members who made reservations
 SELECT DISTINCT M.Name
 FROM Members M
 JOIN Reservations R
 ON M.ID = R.MemberID;
 
-
-
--- 4 Members who borrowed SQL for Beginners
+-- 4. Members who borrowed SQL for Beginners
 SELECT DISTINCT M.Name
 FROM Members M
 JOIN MemberBook MB ON M.ID = MB.MemberID
 JOIN Books B ON MB.BookID = B.ID
 WHERE B.Title = 'SQL for Beginners';
 
-
-
--- 5 Members who borrowed and returned C# Programming
+-- 5. Members who borrowed and returned C# Programming
 SELECT DISTINCT M.Name
 FROM Members M
 JOIN MemberBook MB ON M.ID = MB.MemberID
@@ -351,60 +214,27 @@ JOIN Books B ON MB.BookID = B.ID
 WHERE B.Title = 'C# Programming'
 AND MB.ReturnDate IS NOT NULL;
 
-
-
--- 6 Members who returned after due date
+-- 6. Members who returned books after due date
 SELECT DISTINCT M.Name
 FROM Members M
 JOIN MemberBook MB ON M.ID = MB.MemberID
 WHERE MB.ReturnDate > MB.DueDate;
 
-
-
--- 7 Books borrowed more than 3 times
+-- 7. Books borrowed more than 3 times
 SELECT B.Title, COUNT(*) AS BorrowCount
 FROM Books B
 JOIN MemberBook MB ON B.ID = MB.BookID
 GROUP BY B.Title
 HAVING COUNT(*) > 3;
 
-
-
--- 8 Members borrowed between dates
+-- 8. Members borrowed between 01-01-2024 and 10-01-2024
 SELECT DISTINCT M.Name
 FROM Members M
 JOIN MemberBook MB ON M.ID = MB.MemberID
 WHERE MB.BorrowingDate
 BETWEEN '2024-01-01' AND '2024-01-10';
 
-
-
--- 9 Count total books
+-- 9. Count total books
 SELECT COUNT(*) AS TotalBooks
 FROM Books;
-
-
-
--- ============================================================
--- OPTIONAL QUERIES
--- ============================================================
-
-
-
--- Members borrowed but not returned
-SELECT DISTINCT M.Name
-FROM Members M
-JOIN MemberBook MB ON M.ID = MB.MemberID
-WHERE MB.ReturnDate IS NULL;
-
-
-
--- Members borrowed Science Fiction books
-SELECT DISTINCT M.Name
-FROM Members M
-JOIN MemberBook MB ON M.ID = MB.MemberID
-JOIN Books B ON MB.BookID = B.ID
-JOIN Categories C ON B.CategoryID = C.ID
-WHERE C.Name = 'Science Fiction';
-
 
